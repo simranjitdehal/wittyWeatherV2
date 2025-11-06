@@ -107,12 +107,37 @@
                 width: 100%;
             }
         }
+
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        #logoutBtn {
+            background-color: #e74c3c;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #logoutBtn:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 
 <body>
     <h1>🌤️ Witty Weather</h1>
-    <button id="logoutBtn">Logout</button>
+    <div class="top-bar">
+        <button id="logoutBtn">Logout</button>
+    </div>
+
 
     <div class="search">
         <input type="text" id="city" placeholder="Enter city">

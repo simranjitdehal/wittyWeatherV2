@@ -3,6 +3,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from database import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
+from flask_jwt_extended.exceptions import JWTExtendedException
+
 
 
 auth_bp = Blueprint("auth", __name__)
@@ -62,5 +64,12 @@ def login():
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
-    # session.pop("user", None)  # remove session
-    return {"msg": "Logged out successfully"}, 200
+    try:
+        current_user = get_jwt_identity()
+        if current_user:
+            return jsonify({"msg":"Logged out successfully"}), 200
+        else:
+            return jsonify({"msg":"No active session"}), 200
+    except JWTExtendedException as e:
+        app.logger.warning("Logout JWT error: {e}")
+        return jsonify({"error":"Invalid token"}), 401

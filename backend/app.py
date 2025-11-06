@@ -5,7 +5,7 @@ from config import OPENWEATHER_API_KEY, DEEPSEEK_API_KEY, SQLALCHEMY_DATABASE_UR
 from jokes import temp_jokes, wind_jokes, humidity_jokes, cloud_jokes
 import random
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, verify_jwt_in_request
-from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_jwt_extended.exceptions import NoAuthorizationError, JWTExtendedException
 from dotenv import load_dotenv
 import os
 from routes.auth import auth_bp
@@ -16,9 +16,11 @@ from authlib.integrations.flask_client import OAuth
 from oauth_util import configure_oauth, google_bp
 
 
-app = Flask(__name__)
-# CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_credentials=True)
-CORS(app, supports_credentials=True)
+# app = Flask(__name__)
+app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
+
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_credentials=True)
+# CORS(app, supports_credentials=True)
 
 # load_dotenv()
 
@@ -38,7 +40,6 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = False  # Set True in production with HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-print(f"🔑 SECRET_KEY loaded: {app.config['SECRET_KEY'][:10]}...")  # Print first 10 chars
 
 db.init_app(app)
 jwt = JWTManager(app)
@@ -46,6 +47,7 @@ jwt = JWTManager(app)
 # Register OAuth + Blueprints
 
 configure_oauth(app) 
+app.register_blueprint(auth_bp)
 app.register_blueprint(google_bp)
 app.register_blueprint(weather_bp)
 
@@ -62,11 +64,13 @@ with app.app_context():
 # @jwt_required()
 def home():
     try:
-        verify_jwt_in_request()
+        verify_jwt_in_request(optional=True) #optional=True lets the route work for both logged-in and anonymous users
         current_user = get_jwt_identity()
-        return render_template("index.html", username=current_user)
-    except NoAuthorizationError:
-        return redirect(url_for("login"))
+        if current_user:
+            return render_template("index.html", username=current_user)
+    except JWTExtendedException as e:
+        app.logger.warning(f"JWT error: {e}")
+        return redirect(url_for("auth.login"))
 
 if __name__ == "__main__":
     app.run(debug=True)
