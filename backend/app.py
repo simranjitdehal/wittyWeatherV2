@@ -61,7 +61,6 @@ with app.app_context():
 # Flask routes
 # ------------------------
 @app.route("/")
-# @jwt_required()
 def home():
     try:
         verify_jwt_in_request(optional=True) #optional=True lets the route work for both logged-in and anonymous users

@@ -73,3 +73,9 @@ def logout():
     except JWTExtendedException as e:
         app.logger.warning("Logout JWT error: {e}")
         return jsonify({"error":"Invalid token"}), 401
+
+@auth_bp.route("/me", methods=["GET"])
+@jwt_required()
+def me():
+    user = get_jwt_identity()
+    return jsonify({"username":user}), 200
