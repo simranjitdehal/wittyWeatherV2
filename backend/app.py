@@ -67,6 +67,10 @@ def home():
         current_user = get_jwt_identity()
         if current_user:
             return render_template("index.html", username=current_user)
+        else:
+            # No token or invalid user → show login page
+            return redirect(url_for("auth.login"))
+
     except JWTExtendedException as e:
         app.logger.warning(f"JWT error: {e}")
         return redirect(url_for("auth.login"))

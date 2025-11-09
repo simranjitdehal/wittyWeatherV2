@@ -36,29 +36,35 @@ def signup():
 
     return jsonify({"msg":"User created successfully!"}), 201
 
+
+
 #login route
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route("/login", methods=["POST", "GET"])
 def login():
-    data = request.get_json()
-    username=data.get("username")
-    password = data.get("password")
+    if request.method== "GET":
+        return render_template("login.html")
+    
+    if request.method=="POST":
+        data = request.get_json()
+        username=data.get("username")
+        password = data.get("password")
 
-    if not (username) or not password:
-        return jsonify({"msg":"Username or email and password required"}), 400
-    
-    user = None
-    if username:
-        user = User.query.filter_by(username=username).first()
+        if not (username) or not password:
+            return jsonify({"msg":"Username or email and password required"}), 400
+        
+        user = None
+        if username:
+            user = User.query.filter_by(username=username).first()
 
-    if not user:
-        return jsonify({"msg": "User not registered in Database"}), 400
-    
-    if not check_password_hash(user.password_hash, password):
-        return jsonify({"msg":"Invalid password or username"}), 400
-    
-    #create JWT token
-    token = create_access_token(identity=username) # removed this --> csrf = True
-    return jsonify({"access_token": token}), 200
+        if not user:
+            return jsonify({"msg": "User not registered in Database"}), 400
+        
+        if not check_password_hash(user.password_hash, password):
+            return jsonify({"msg":"Invalid password or username"}), 400
+        
+        #create JWT token
+        token = create_access_token(identity=username) # removed this --> csrf = True
+        return jsonify({"access_token": token}), 200
 
 #logout rout
 @auth_bp.route("/logout", methods=["POST"])
@@ -78,4 +84,6 @@ def logout():
 @jwt_required()
 def me():
     user = get_jwt_identity()
-    return jsonify({"username":user}), 200
+    if user:
+        return jsonify({"username":user}), 200
+    return jsonify({"msg":"Unauthorized"}), 401
