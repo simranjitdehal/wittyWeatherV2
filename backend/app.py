@@ -14,7 +14,7 @@ from datetime import timedelta
 from database import db
 from authlib.integrations.flask_client import OAuth
 from oauth_util import configure_oauth, google_bp
-
+from extentions import redis_client
 
 # app = Flask(__name__)
 app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
@@ -30,10 +30,12 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_cred
 # db_host = os.getenv("DB_HOST")
 # db_name = os.getenv("DB_NAME")
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
 app.config["SECRET_KEY"] = JWT_SECRET_KEY
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 
 # Session configuration for OAuth
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'

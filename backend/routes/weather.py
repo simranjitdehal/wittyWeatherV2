@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, json
 import requests
 import os
 from utils import generate_humor
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from extentions import redis_client
 
 weather_bp = Blueprint("weather", __name__)
 
@@ -14,6 +15,16 @@ def get_weather():
     city = request.args.get("city")
     if not city:
         return jsonify({"error": "Please provide a city name"}), 400
+
+    city_key = city.lower().strip()
+
+    # Check cache first
+    cached_data = redis_client.get(city_key)
+    if cached_data:
+        print(f"Cache hit for {city}")
+        return jsonify(json.loads(cached_data))
+
+    print(f"Cache miss for {city}")
 
     # Call OpenWeather API
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
@@ -37,16 +48,21 @@ def get_weather():
     # Generate humor
     funny_comments = generate_humor(weather_info)
 
-    return jsonify({
-    "city": city,
-    "temperature": weather_info["temp"],
-    "description": weather_info["description"],
-    "humidity": weather_info["humidity"],
-    "wind_speed": weather_info["wind_speed"],
-    "feels_like": weather_info["feels_like"],
-    "funny_temperature": funny_comments["temperature"],
-    "funny_humidity": funny_comments["humidity"],
-    "funny_wind": funny_comments["wind"],
-    "cloudiness": weather_info["clouds"],
-    "funny_clouds": funny_comments["clouds"]
-})
+    final_data = {
+        "city": city,
+        "temperature": weather_info["temp"],
+        "description": weather_info["description"],
+        "humidity": weather_info["humidity"],
+        "wind_speed": weather_info["wind_speed"],
+        "feels_like": weather_info["feels_like"],
+        "funny_temperature": funny_comments["temperature"],
+        "funny_humidity": funny_comments["humidity"],
+        "funny_wind": funny_comments["wind"],
+        "cloudiness": weather_info["clouds"],
+        "funny_clouds": funny_comments["clouds"]
+    }
+
+    # Store response in Redis (10 minutes = 600 seconds)
+    redis_client.setex(city_key, 600, json.dumps(final_data))
+
+    return jsonify(final_data)
