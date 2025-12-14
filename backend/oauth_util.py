@@ -19,17 +19,18 @@ def configure_oauth(app):
 
 google_bp = Blueprint('google_auth', __name__)
 
-@google_bp.route('/login/google')
+@google_bp.route('/api/login/google')
 def login_google():
     redirect_uri = url_for('google_auth.callback_google', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
-@google_bp.route('/callback/google')
+@google_bp.route('/api/callback/google')
 def callback_google():
     token = oauth.google.authorize_access_token()
     resp = oauth.google.get('https://www.googleapis.com/oauth2/v1/userinfo')
 
     user_info = resp.json()
+    print(user_info)
 
     # Extract key info
     email = user_info.get('email')
@@ -53,5 +54,6 @@ def callback_google():
     #     'user': user_info
     # })
     # frontend_url = f"http://127.0.0.1:5000/login.html?token={jwt_token}&name={name}"
-    frontend_url = f"http://127.0.0.1:8000/index.html?token={jwt_token}"
+    frontend_url = f"http://localhost:8000/index.html?token={jwt_token}"
     return redirect(frontend_url)
+    

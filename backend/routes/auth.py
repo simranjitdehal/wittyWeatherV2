@@ -9,7 +9,7 @@ from flask_jwt_extended.exceptions import JWTExtendedException
 
 auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/signup', methods=['POST'])
+@auth_bp.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     username = data.get('username')
@@ -39,10 +39,10 @@ def signup():
 
 
 #login route
-@auth_bp.route("/login", methods=["POST", "GET"])
+@auth_bp.route("/api/login", methods=["POST", "GET"])
 def login():
-    if request.method== "GET":
-        return render_template("login.html")
+    # if request.method== "GET":
+    #     return render_template("login.html")
     
     if request.method=="POST":
         data = request.get_json()
@@ -63,11 +63,22 @@ def login():
             return jsonify({"msg":"Invalid password or username"}), 400
         
         #create JWT token
-        token = create_access_token(identity=username) # removed this --> csrf = True
+        token = create_access_token(identity=username) # removed this :- csrf = True
         return jsonify({"access_token": token}), 200
 
+        # return JSON with cookie
+        response = jsonify({"success": True, "username": username})
+        response.set_cookie(
+        'access_token_cookie',
+        token,
+        httponly=True,
+        secure=False,  # Set True in production with HTTPS
+        samesite='Lax'
+        )
+        return response, 200
+
 #logout rout
-@auth_bp.route("/logout", methods=["POST"])
+@auth_bp.route("/api/logout", methods=["POST"])
 @jwt_required()
 def logout():
     try:
@@ -80,7 +91,7 @@ def logout():
         app.logger.warning("Logout JWT error: {e}")
         return jsonify({"error":"Invalid token"}), 401
 
-@auth_bp.route("/me", methods=["GET"])
+@auth_bp.route("/api/me", methods=["GET"])
 @jwt_required()
 def me():
     user = get_jwt_identity()

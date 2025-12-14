@@ -14,12 +14,13 @@ from datetime import timedelta
 from database import db
 from authlib.integrations.flask_client import OAuth
 from oauth_util import configure_oauth, google_bp
-from extentions import redis_client
+from extensions import redis_client
+from flask_migrate import Migrate
 
-# app = Flask(__name__)
-app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
+app = Flask(__name__)
+# app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
 
-CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
 # CORS(app, supports_credentials=True)
 
 # load_dotenv()
@@ -30,9 +31,15 @@ CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:8000"}}, supports_cred
 # db_host = os.getenv("DB_HOST")
 # db_name = os.getenv("DB_NAME")
 
-
+#SQL things
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
+
+#jwt things
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
 app.config["SECRET_KEY"] = JWT_SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
@@ -42,8 +49,6 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = False  # Set True in production with HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
-
-db.init_app(app)
 jwt = JWTManager(app)
 
 # Register OAuth + Blueprints
@@ -55,27 +60,26 @@ app.register_blueprint(weather_bp)
 
 
 
-with app.app_context():
-    db.create_all()
-    print("✅ Users table created!")
+# with app.app_context():
+#     db.create_all()
+#     print("✅ Users table created!")
 
-# ------------------------
 # Flask routes
-# ------------------------
-@app.route("/")
-def home():
+@app.route("/api/health")
+def health_check():
+    return jsonify({"status": "healthy"}), 200
+
+@app.route("/api/check-auth")
+def check_auth():
     try:
-        verify_jwt_in_request(optional=True) #optional=True lets the route work for both logged-in and anonymous users
+        verify_jwt_in_request(optional=True)
         current_user = get_jwt_identity()
         if current_user:
-            return render_template("index.html", username=current_user)
+            return jsonify({"authenticated": True, "username": current_user}), 200
         else:
-            # No token or invalid user → show login page
-            return redirect(url_for("auth.login"))
-
-    except JWTExtendedException as e:
-        app.logger.warning(f"JWT error: {e}")
-        return redirect(url_for("auth.login"))
+            return jsonify({"authenticated": False}), 401
+    except JWTExtendedException:
+        return jsonify({"authenticated": False}), 401
 
 if __name__ == "__main__":
     app.run(debug=True)

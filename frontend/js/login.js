@@ -8,8 +8,9 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
         messageDiv.textContent = "Please enter username, email and password"
         return;
     }
+    //changed fetch("http://127.0.0.1:5000/login", to /api/login because of nginx location /api/ { proxy_pass http://backend:5000/;
     try {
-        const response = await fetch("http://127.0.0.1:5000/login", {
+        const response = await fetch("/api/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -36,6 +37,6 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("googleLoginBtn").addEventListener("click", function () {
         console.log("Button clicked!");
-        window.location.href = "http://127.0.0.1:5000/login/google";
+        window.location.href = "/api/login/google";
     });
 });

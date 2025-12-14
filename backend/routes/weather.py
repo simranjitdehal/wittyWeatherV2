@@ -3,13 +3,13 @@ import requests
 import os
 from utils import generate_humor
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from extentions import redis_client
+from extensions import redis_client
 
 weather_bp = Blueprint("weather", __name__)
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-@weather_bp.route("/get_weather", methods=["GET"])
+@weather_bp.route("/api/get_weather", methods=["GET"])
 @jwt_required()
 def get_weather():
     city = request.args.get("city")

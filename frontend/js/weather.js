@@ -14,7 +14,7 @@ function getWeather() {
 
     const token = localStorage.getItem("token"); // get JWT
 
-    fetch(`http://127.0.0.1:5000/get_weather?city=${city}`, {
+    fetch(`/api/get_weather?city=${city}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
