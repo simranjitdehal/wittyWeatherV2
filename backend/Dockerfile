@@ -44,7 +44,9 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["sh", "-c", "gunicorn -w 4 -b 0.0.0.0:$PORT app:app"]
+
 
 
 
