@@ -11,7 +11,7 @@ import os
 from routes.auth import auth_bp
 from routes.weather import weather_bp
 from datetime import timedelta
-from database import db
+from database import db, migrate
 from authlib.integrations.flask_client import OAuth
 from oauth_util import configure_oauth, google_bp
 from extensions import redis_client
@@ -25,7 +25,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:8000"}}, supports_cred
 
 # load_dotenv()
 
-# Database config from .env
+# Database config from .envz``
 # db_user = os.getenv("DB_USER")
 # db_password = os.getenv("DB_PASSWORD")
 # db_host = os.getenv("DB_HOST")
@@ -36,8 +36,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-migrate = Migrate(app, db)
-
+# migrate = Migrate(app, db)
+migrate = Migrate()
 
 #jwt things
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
