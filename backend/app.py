@@ -36,8 +36,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-# migrate = Migrate(app, db)
-migrate = Migrate()
+migrate = Migrate(app, db)
+# migrate = Migrate()
 
 #jwt things
 app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
@@ -80,6 +80,11 @@ def check_auth():
             return jsonify({"authenticated": False}), 401
     except JWTExtendedException:
         return jsonify({"authenticated": False}), 401
+
+@app.route("/health")
+def health():
+    return {"status": "ok"}
+
 
 if __name__ == "__main__":
     app.run(debug=True)
