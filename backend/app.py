@@ -60,9 +60,9 @@ app.register_blueprint(weather_bp)
 
 
 
-# with app.app_context():
-#     db.create_all()
-#     print("✅ Users table created!")
+with app.app_context():
+    db.create_all()
+    print("✅ Users table created!")
 
 # Flask routes
 @app.route("/api/health")
