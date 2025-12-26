@@ -85,6 +85,13 @@ def check_auth():
 def health():
     return {"status": "ok"}
 
+@app.route("/debug/routes")
+def debug_routes():
+    return {
+        "routes": [str(rule) for rule in app.url_map.iter_rules()]
+    }
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
