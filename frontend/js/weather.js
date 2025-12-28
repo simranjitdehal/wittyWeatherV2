@@ -14,7 +14,7 @@ function getWeather() {
 
     const token = localStorage.getItem("token"); // get JWT
 
-    fetch(`/api/get_weather?city=${city}`, {
+    fetch(`https://wittyweatherv2-production.up.railway.app/api/get_weather?city=${city}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

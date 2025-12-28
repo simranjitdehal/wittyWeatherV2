@@ -20,7 +20,7 @@ document.getElementById("signupBtn").addEventListener("click", async () => {
     }
 
     try {
-        const response = await fetch("/api/signup", {
+        const response = await fetch("https://wittyweatherv2-production.up.railway.app/api/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password, confirm_password })

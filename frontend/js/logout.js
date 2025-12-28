@@ -8,7 +8,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     }
 
     try {
-        const response = await fetch("/api/logout", {
+        const response = await fetch("https://wittyweatherv2-production.up.railway.app/api/logout", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

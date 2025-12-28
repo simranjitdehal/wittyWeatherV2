@@ -10,7 +10,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     }
     //changed fetch("http://127.0.0.1:5000/login", to /api/login because of nginx location /api/ { proxy_pass http://backend:5000/;
     try {
-        const response = await fetch("/api/login", {
+        const response = await fetch("https://wittyweatherv2-production.up.railway.app/api/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -37,6 +37,6 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("googleLoginBtn").addEventListener("click", function () {
         console.log("Button clicked!");
-        window.location.href = "/api/login/google";
+        window.location.href = "https://wittyweatherv2-production.up.railway.app/api/login/google";
     });
 });

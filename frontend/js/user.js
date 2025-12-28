@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const res = await fetch("/api/me", {
+        const res = await fetch("https://wittyweatherv2-production.up.railway.app/api/me", {
             headers: { Authorization: `Bearer ${token}` },
         });
 

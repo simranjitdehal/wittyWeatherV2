@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
 
-    fetch("/api/check-auth", {
+    // fetch("/api/check-auth", {
+    fetch("https://wittyweatherv2-production.up.railway.app/api/check-auth", {
         headers: {
             "Authorization": "Bearer " + token
         }
