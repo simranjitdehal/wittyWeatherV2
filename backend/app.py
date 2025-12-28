@@ -20,8 +20,9 @@ from flask_migrate import Migrate
 app = Flask(__name__)
 # app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
-# CORS(app, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "https://spectacular-luck-production.up.railway.app"}}, supports_credentials=True)
+# CORS(app, supports_credentials=True)  
 
 # load_dotenv()
 
