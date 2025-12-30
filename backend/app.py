@@ -16,6 +16,7 @@ from authlib.integrations.flask_client import OAuth
 from oauth_util import configure_oauth, google_bp
 from extensions import redis_client
 from flask_migrate import Migrate
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 # app = Flask(__name__, template_folder="../frontend", static_folder="../frontend/js")
@@ -24,6 +25,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://spectacular-luck-production.up.railway.app"}}, supports_credentials=True)
 # CORS(app, supports_credentials=True)  
 
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1) 
+app.config['PREFERRED_URL_SCHEME'] = 'https'
 # load_dotenv()
 
 # Database config from .envz``
