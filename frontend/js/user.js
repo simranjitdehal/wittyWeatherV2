@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("✅ user.js running – testing /me");
 
     const token = localStorage.getItem("token");
-    // console.log("Token in storage:", token);
+    // console.log("Token in storage:", token); 
 
     if (!token) {
         alert("No token found → redirecting to login.html");
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (res.ok) {
             const data = await res.json();
-            console.log("Fetched user:", data);
+            // console.log("Fetched user:", data);
             document.getElementById("UsernameDisplay").innerText =
                 `Welcome, ${data.username}`;
         } else {
