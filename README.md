@@ -2,6 +2,8 @@
 # WittyWeather
 Live link: https://spectacular-luck-production.up.railway.app
 
+Demo User ID:- "johndoe" and Password = "Welcome@123"
+
 A full-stack weather application that delivers real-time weather data with context-aware, humorous responses.
 
 ## Overview
